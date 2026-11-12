@@ -1,0 +1,175 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academic Planner | Abraham</title>
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        .task-input {
+            width: 100%;
+            padding: 12px;
+            margin: 12px 0;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        .task-button {
+            background: #27496d;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .task-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            margin: 10px 0;
+            background: #f4f7fb;
+            border-radius: 6px;
+            overflow-wrap: anywhere;
+        }
+
+        .completed {
+            text-decoration: line-through;
+            color: gray;
+        }
+
+        .delete-button {
+            background: #d62828;
+            color: white;
+            border: none;
+            padding: 8px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>My Academic Planner</h1>
+        <p>Organize Your Studies and Tasks</p>
+    </header>
+
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="about.html">About Me</a>
+        <a href="projects.html">Projects</a>
+        <a href="planner.html">Academic Planner</a>
+        <a href="contact.html">Contact</a>
+    </nav>
+
+    <main>
+        <section>
+            <h2>Manage Your Academic Tasks</h2>
+
+            <p>Enter a task below to add it to your planner.</p>
+
+            <input
+                type="text"
+                id="taskInput"
+                class="task-input"
+                placeholder="Enter your academic task"
+            >
+
+            <button class="task-button" onclick="addTask()">
+                Add Task
+            </button>
+
+            <h2 style="margin-top: 25px;">My Tasks</h2>
+
+            <ul id="taskList" style="list-style: none;"></ul>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Abraham Abba. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        let tasks = JSON.parse(
+            localStorage.getItem("academicTasks") || "[]"
+        );
+
+        function saveTasks() {
+            localStorage.setItem(
+                "academicTasks",
+                JSON.stringify(tasks)
+            );
+        }
+
+        function displayTasks() {
+            const taskList = document.getElementById("taskList");
+
+            taskList.innerHTML = "";
+
+            tasks.forEach(function(task, index) {
+                const li = document.createElement("li");
+                li.className = "task-item";
+
+                const taskText = document.createElement("span");
+                taskText.textContent = task.name;
+
+                if (task.completed) {
+                    taskText.classList.add("completed");
+                }
+
+                taskText.onclick = function() {
+                    tasks[index].completed = !tasks[index].completed;
+                    saveTasks();
+                    displayTasks();
+                };
+
+                taskText.style.cursor = "pointer";
+
+                const deleteButton = document.createElement("button");
+                deleteButton.textContent = "Delete";
+                deleteButton.className = "delete-button";
+
+                deleteButton.onclick = function() {
+                    tasks.splice(index, 1);
+                    saveTasks();
+                    displayTasks();
+                };
+
+                li.appendChild(taskText);
+                li.appendChild(deleteButton);
+
+                taskList.appendChild(li);
+            });
+        }
+
+        function addTask() {
+            const input = document.getElementById("taskInput");
+            const taskName = input.value.trim();
+
+            if (taskName === "") {
+                alert("Please enter a task!");
+                return;
+            }
+
+            tasks.push({
+                name: taskName,
+                completed: false
+            });
+
+            saveTasks();
+            displayTasks();
+
+            input.value = "";
+        }
+
+        displayTasks();
+    </script>
+
+</body>
+</html>
